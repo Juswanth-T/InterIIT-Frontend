@@ -1,14 +1,19 @@
 'use client'
+// pages/index.tsx
 import { useState } from 'react';
 
-const Home: React.FC = () => {
-  const [numParticipants, setNumParticipants] = useState<number | null>(null);
-  const [participants, setParticipants] = useState<any[]>([]);
+const MAX_PARTICIPANTS = 8;
 
-  const handleNumParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const num = parseInt(e.target.value);
-    setNumParticipants(num >= 0 ? num : null);
-    setParticipants(Array.from({ length: num }, () => ({ name: '', email: '', college: '' })));
+const Home: React.FC = () => {
+  const [participants, setParticipants] = useState<any[]>([
+    { name: '', email: '', college: '' },
+  ]);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handleAddParticipant = () => {
+    if (participants.length < MAX_PARTICIPANTS) {
+      setParticipants([...participants, { name: '', email: '', college: '' }]);
+    }
   };
 
   const handleParticipantChange = (index: number, field: string, value: string) => {
@@ -21,26 +26,17 @@ const Home: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Participant Details:', participants);
+    setIsPreviewOpen(true);
+  };
+
+  const closePreview = () => {
+    setIsPreviewOpen(false);
   };
 
   return (
     <div className="container mx-auto mt-5">
       <h1 className="text-2xl font-semibold">Participant Form</h1>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="numParticipants" className="block text-sm font-medium">
-            Number of Participants:
-          </label>
-          <input
-            type="number"
-            id="numParticipants"
-            name="numParticipants"
-            value={numParticipants ?? ''}
-            onChange={handleNumParticipantsChange}
-            className="px-4 py-2 mt-2 border rounded-lg"
-          />
-        </div>
         {participants.map((participant, index) => (
           <div key={index} className="mb-4 border rounded-lg p-4">
             <h2 className="text-lg font-semibold">Participant {index + 1}</h2>
@@ -88,10 +84,41 @@ const Home: React.FC = () => {
             </div>
           </div>
         ))}
+        {participants.length < MAX_PARTICIPANTS && (
+          <button
+            type="button"
+            onClick={handleAddParticipant}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Add Participant
+          </button>
+        )}
         <button type="submit" className="px-4 py-2 mt-4 bg-blue-500 text-white rounded-lg">
           Submit
         </button>
       </form>
+
+      {isPreviewOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-2xl font-semibold mb-4">Participant Details</h2>
+            {participants.map((participant, index) => (
+              <div key={index} className="mb-4">
+                <h3 className="text-lg font-semibold">Participant {index + 1}</h3>
+                <p>Name: {participant.name}</p>
+                <p>Email: {participant.email}</p>
+                <p>College Name: {participant.college}</p>
+              </div>
+            ))}
+            <button
+              onClick={closePreview}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
