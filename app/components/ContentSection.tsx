@@ -2,7 +2,7 @@ import Box from './Box';
 
 export default function ContentSection() {
   return (
-    <div className="mt-16">
+    <div className="mt-7">
       <h1 className="text-2xl font-bold mb-4 underline">High Prep</h1>
       <div className='flex flex-col'>
       <div className="flex justify-between gap-3">
